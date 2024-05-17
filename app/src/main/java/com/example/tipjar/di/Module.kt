@@ -3,9 +3,13 @@ package com.example.tipjar.di
 import androidx.room.Room
 import com.example.tipjar.data.db.TIP_DB
 import com.example.tipjar.data.db.TipDatabase
+import com.example.tipjar.data.repository.DataStoreRepositoryImpl
 import com.example.tipjar.data.repository.TipRepositoryImpl
+import com.example.tipjar.domain.repository.DataStoreRepository
 import com.example.tipjar.domain.repository.TipRepository
-import com.example.tipjar.domain.usecase.CreateTipUseCase
+import com.example.tipjar.domain.usecase.tip.CreateTipUseCase
+import com.example.tipjar.domain.usecase.tip.RemoveTipUseCase
+import com.example.tipjar.domain.usecase.tip.SearchTipUseCase
 import com.example.tipjar.viewmodel.TipHistoryViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.loadKoinModules
@@ -31,17 +35,17 @@ val databaseModule = module {
 
 val repositoryModule = module {
     single<TipRepository> { TipRepositoryImpl(get()) }
+    single<DataStoreRepository> { DataStoreRepositoryImpl(get()) }
 }
 
 val useCaseModule = module {
     factory { CreateTipUseCase(get()) }
-//    factory { GetTipUseCase(get()) }
-//    factory { RemoveTipUseCase(get()) }
-//    factory { SearchTipUseCase(get()) }
+    factory { RemoveTipUseCase(get()) }
+    factory { SearchTipUseCase(get()) }
 }
 
 val viewModelModule = module {
-    viewModel { TipHistoryViewModel(get()) }
+    viewModel { TipHistoryViewModel(get(), get(), get(), get()) }
 }
 
 val validationModule = module {
