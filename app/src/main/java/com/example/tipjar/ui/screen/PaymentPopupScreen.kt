@@ -33,9 +33,11 @@ import com.example.tipjar.util.TipShapes
 
 @Composable
 fun PaymentPopupScreen(
+    currency: String,
     data: TipHistory,
     onDismissRequest: () -> Unit,
 ) {
+    //TODO shared animation
     Dialog(onDismissRequest = { onDismissRequest() }) {
         // Draw a rectangle shape with rounded corners inside the dialog
         Surface(
@@ -68,6 +70,7 @@ fun PaymentPopupScreen(
                         .fillMaxWidth()
                 ) {
                     PaymentRow(
+                        currency = currency,
                         item = data,
                         hideImage = true,
                     )
@@ -97,6 +100,7 @@ fun PaymentPopupScreen(
 fun PaymentPopupScreenPreview() {
     TipJarTheme {
         PaymentPopupScreen(
+            currency = "$",
             data = TipHistory(
                 timestamp = 1611195773000,
                 amount = 205.23,

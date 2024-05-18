@@ -7,6 +7,7 @@ import com.example.tipjar.domain.repository.DataStoreRepository
 import com.example.tipjar.domain.usecase.tip.CreateTipUseCase
 import com.example.tipjar.domain.usecase.tip.RemoveTipUseCase
 import com.example.tipjar.domain.usecase.tip.SearchTipUseCase
+import com.example.tipjar.util.Constants.DEFAULT_CURRENCY
 import com.example.tipjar.util.Constants.SP_CURRENCY_KEY
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,17 +21,6 @@ class TipHistoryViewModel(
     private val searchTipUseCase: SearchTipUseCase,
     private val datastoreRepository: DataStoreRepository,
 ) : BaseViewModel() {
-    private var amount = ""
-    private var tip = ""
-    private var imagePath = ""
-
-    // total tip state
-    private val _totalTip = MutableStateFlow(0.0)
-    val totalTip = _totalTip.asStateFlow()
-
-    //per person state
-    private val _perPersonTip = MutableStateFlow(0.0)
-    val perPersonTip = _perPersonTip.asStateFlow()
 
     //payments state
     private val _payments = MutableStateFlow(emptyList<TipHistory>())
@@ -39,15 +29,6 @@ class TipHistoryViewModel(
     //currency state
     private val _currency = MutableStateFlow("$")
     val currency = _currency.asStateFlow()
-
-    fun onSavePayment(amount: Double, tipPercent: Double) {
-        val tip = amount * tipPercent
-        val imagePath = ""//TODO
-        viewModelScope.launch {
-            createTipUseCase.invoke(amount, tip, imagePath)
-            //TODO after it's done, navigate to next page
-        }
-    }
 
     fun onTapPayment() {
         //TODO show dialog?
@@ -83,7 +64,7 @@ class TipHistoryViewModel(
 
     fun onGetCurrency() {
         viewModelScope.launch(Dispatchers.IO) {
-            datastoreRepository.getString(SP_CURRENCY_KEY).collectLatest { data ->
+            datastoreRepository.getString(SP_CURRENCY_KEY, DEFAULT_CURRENCY).collectLatest { data ->
                 _currency.tryEmit(data)
             }
         }

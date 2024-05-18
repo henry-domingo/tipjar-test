@@ -1,6 +1,7 @@
 package com.example.tipjar.ui.widget
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.LastBaseline
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -29,12 +31,13 @@ import com.example.tipjar.util.toDateString
 
 @Composable
 fun PaymentRow(
+    currency: String,
     item: TipHistory,
     hideImage: Boolean = false,
 ) {
-    val currency = "$"//TODO
     Row(
         modifier = Modifier
+            .background(Color.White)
             .padding(compactPaddingDimensions.extraMediumPadding)
     ) {
         Column {
@@ -79,7 +82,8 @@ fun PaymentRow(
 fun PaymentRowPreview() {
     TipJarTheme {
         PaymentRow(
-            hideImage = true,
+            currency = "$",
+//            hideImage = true,
             item = TipHistory(
                 timestamp = 1611195773000,
                 amount = 205.23,

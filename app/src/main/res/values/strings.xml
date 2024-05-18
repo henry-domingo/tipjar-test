@@ -10,4 +10,9 @@
     <string name="saved_payments">Saved Payments</string>
     <string name="currency_amount_tip">Tip : %1$s%2$.2f</string>
     <string name="currency_amount">%1$s%2$.2f</string>
+    <string name="camera_rationale">Kindly grant the CAMERA permission in your phone settings to enable receipt capture.</string>
+    <string name="got_it">Got it</string>
+    <string name="please_wait">Please wait…</string>
+    <string name="error_amount">Please enter an amount</string>
+    <string name="no_payments">There\'s nothing here. \nTap the button below to add a new payment.</string>
 </resources>

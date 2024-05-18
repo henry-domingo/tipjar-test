@@ -24,11 +24,11 @@ class DataStoreRepositoryImpl(
         }
     }
 
-    override fun getString(key: String): Flow<String> {
+    override fun getString(key: String, defaultValue: String): Flow<String> {
         val preferencesKey = stringPreferencesKey(key)
         return context.dataStore.data
             .map { preferences ->
-                preferences[preferencesKey] ?: ""
+                preferences[preferencesKey] ?: defaultValue
             }
     }
 

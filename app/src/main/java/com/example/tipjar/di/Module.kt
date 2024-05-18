@@ -10,6 +10,7 @@ import com.example.tipjar.domain.repository.TipRepository
 import com.example.tipjar.domain.usecase.tip.CreateTipUseCase
 import com.example.tipjar.domain.usecase.tip.RemoveTipUseCase
 import com.example.tipjar.domain.usecase.tip.SearchTipUseCase
+import com.example.tipjar.viewmodel.NewPaymentViewModel
 import com.example.tipjar.viewmodel.TipHistoryViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.loadKoinModules
@@ -46,6 +47,7 @@ val useCaseModule = module {
 
 val viewModelModule = module {
     viewModel { TipHistoryViewModel(get(), get(), get(), get()) }
+    viewModel { NewPaymentViewModel(get(), get(), get(), get()) }
 }
 
 val validationModule = module {

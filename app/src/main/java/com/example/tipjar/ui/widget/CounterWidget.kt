@@ -7,22 +7,26 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tipjar.ui.theme.Gray2
 import com.example.tipjar.ui.theme.Orange
-import com.example.tipjar.ui.theme.TipJarTheme
 import com.example.tipjar.ui.theme.compactTipTypography
+import com.example.tipjar.viewmodel.NewPaymentViewModel
 
 @Composable
 fun CounterWidget(
     label: String = "",
+    vm: NewPaymentViewModel,
 ) {
+    val peopleCount by vm.peopleCount.collectAsState()
+
     Column(
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
@@ -37,7 +41,7 @@ fun CounterWidget(
             OutlinedButton(
                 border = BorderStroke(1.dp, Gray2),
                 onClick = {
-                    //TODO
+                    vm.incrementPeople()
                 }
             ) {
                 Text("+", style = compactTipTypography.boldXXL, color = Orange)
@@ -46,12 +50,13 @@ fun CounterWidget(
                 modifier = Modifier.weight(1f),
                 style = compactTipTypography.boldXXL,
                 textAlign = TextAlign.Center,
-                text = "1"//TODO
+                text = "$peopleCount"
             )
             OutlinedButton(
                 border = BorderStroke(1.dp, Gray2),
+                enabled = peopleCount > 1,
                 onClick = {
-                    //TODO
+                    vm.decrementPeople()
                 }
             ) {
                 Text(
@@ -63,10 +68,10 @@ fun CounterWidget(
     }
 }
 
-@Preview
-@Composable
-fun CounterWidgetPreview() {
-    TipJarTheme {
-        CounterWidget(label = "Sample label")
-    }
-}
+//@Preview
+//@Composable
+//fun CounterWidgetPreview() {
+//    TipJarTheme {
+//        CounterWidget(label = "Sample label")
+//    }
+//}
