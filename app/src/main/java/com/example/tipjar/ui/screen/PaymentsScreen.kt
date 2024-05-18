@@ -87,7 +87,7 @@ fun PaymentsScreen() {
             modifier = Modifier.padding(innerPadding)
         ) {
             items(dataList) { data ->
-                PaymentRow(data)
+                PaymentRow(item = data)
             }
         }
     }

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,13 +24,18 @@ import com.example.tipjar.ui.theme.Gray3
 import com.example.tipjar.ui.theme.TipJarTheme
 import com.example.tipjar.ui.theme.compactPaddingDimensions
 import com.example.tipjar.ui.theme.compactTipTypography
+import com.example.tipjar.util.TipShapes
 import com.example.tipjar.util.toDateString
 
 @Composable
-fun PaymentRow(item: TipHistory) {
+fun PaymentRow(
+    item: TipHistory,
+    hideImage: Boolean = false,
+) {
     val currency = "$"//TODO
     Row(
-        modifier = Modifier.padding(compactPaddingDimensions.extraMediumPadding)
+        modifier = Modifier
+            .padding(compactPaddingDimensions.extraMediumPadding)
     ) {
         Column {
             Text(
@@ -56,15 +60,17 @@ fun PaymentRow(item: TipHistory) {
                 )
             }
         }
-        Spacer(modifier = Modifier.weight(1f))
-        //TODO
-        Image(
-            modifier = Modifier
-                .size(64.dp)
-                .clip(RoundedCornerShape(15.dp)),
-            painter = painterResource(id = R.drawable.ic_launcher_background),
-            contentDescription = "image"
-        )
+        if (!hideImage) {
+            Spacer(modifier = Modifier.weight(1f))
+            //TODO
+            Image(
+                modifier = Modifier
+                    .size(64.dp)
+                    .clip(TipShapes.large),
+                painter = painterResource(id = R.drawable.ic_launcher_background),
+                contentDescription = "image"
+            )
+        }
     }
 }
 
@@ -73,7 +79,8 @@ fun PaymentRow(item: TipHistory) {
 fun PaymentRowPreview() {
     TipJarTheme {
         PaymentRow(
-            TipHistory(
+            hideImage = true,
+            item = TipHistory(
                 timestamp = 1611195773000,
                 amount = 205.23,
                 tip = 20.52,

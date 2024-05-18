@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuDefaults
@@ -23,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.example.tipjar.ui.theme.Gray
 import com.example.tipjar.ui.theme.TipJarTheme
 import com.example.tipjar.ui.theme.compactTipTypography
+import com.example.tipjar.util.TipShapes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,7 +41,7 @@ fun BorderedTextField(
         )
         Row(
             modifier = Modifier
-                .border(width = 2.dp, color = Gray, shape = RoundedCornerShape(20.dp))
+                .border(width = 2.dp, color = Gray, shape = TipShapes.extraLarge)
                 .padding(horizontal = 20.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
