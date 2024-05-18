@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">TipJar</string>
+    <string name="save_payment">Save Payment</string>
+    <string name="enter_amount">Enter Amount</string>
+    <string name="how_many_people">How many people?</string>
+    <string name="tip_percent">% TIP</string>
+    <string name="total_tip">Total Tip</string>
+    <string name="per_person">Per Person</string>
+    <string name="take_photo_receipt">Take Photo of Receipt</string>
 </resources>
