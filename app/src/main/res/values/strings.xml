@@ -7,4 +7,7 @@
     <string name="total_tip">Total Tip</string>
     <string name="per_person">Per Person</string>
     <string name="take_photo_receipt">Take Photo of Receipt</string>
+    <string name="saved_payments">Saved Payments</string>
+    <string name="currency_amount_tip">Tip : %1$s%2$.2f</string>
+    <string name="currency_amount">%1$s%2$.2f</string>
 </resources>
