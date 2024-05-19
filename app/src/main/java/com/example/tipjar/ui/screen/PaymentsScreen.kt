@@ -54,9 +54,9 @@ fun PaymentsScreen(
     vm: TipHistoryViewModel = koinViewModel(),
     navController: NavHostController
 ) {
-
     val dataList by vm.payments.collectAsState()
     val currency by vm.currency.collectAsState()
+    val showDialog by vm.showDialog.collectAsState()
 
     Scaffold(
         topBar = {
@@ -135,10 +135,18 @@ fun PaymentsScreen(
                         },
                         modifier = Modifier.animateItemPlacement()
                     ) {
-                        PaymentRow(item = data, currency = currency)
+                        PaymentRow(item = data, currency = currency) {
+                            vm.toggleDialog(true, it)
+                        }
                     }
                 }
             }
+        }
+    }
+
+    if (showDialog.first && showDialog.second != null) {
+        PaymentPopupScreen(currency = currency, data = showDialog.second!!) {
+            vm.toggleDialog(false)
         }
     }
 

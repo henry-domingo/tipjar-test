@@ -1,6 +1,7 @@
 package com.example.tipjar.ui.screen
 
 import android.Manifest
+import android.net.Uri
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -38,22 +39,25 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.core.content.FileProvider
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.tipjar.BuildConfig
 import com.example.tipjar.R
 import com.example.tipjar.ui.theme.Orange
 import com.example.tipjar.ui.theme.TipJarTheme
 import com.example.tipjar.ui.theme.compactPaddingDimensions
 import com.example.tipjar.ui.theme.compactTipTypography
-import com.example.tipjar.ui.widget.BorderedTextField
-import com.example.tipjar.ui.widget.BorderedTextFieldType
+import com.example.tipjar.ui.widget.BorderedNumberField
 import com.example.tipjar.ui.widget.CounterWidget
 import com.example.tipjar.ui.widget.SimpleDialog
 import com.example.tipjar.util.AppScreen
+import com.example.tipjar.util.createImageFile
 import com.example.tipjar.viewmodel.NewPaymentViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
@@ -61,6 +65,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import org.koin.androidx.compose.koinViewModel
+import java.util.Objects
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
@@ -71,6 +76,14 @@ fun NewPaymentScreen(
     //states
     val takeImage by vm.takeImage.collectAsState()
     val showRationale by vm.showRationale.collectAsState()
+    val amount by vm.amount.collectAsState()
+    val tipPercent by vm.tipPercent.collectAsState()
+    val amountError by vm.amountError.collectAsState()
+    val tipError by vm.tipError.collectAsState()
+    val currency by vm.currency.collectAsState()
+    val tipPerPerson by vm.perPersonTip.collectAsState()
+    val totalTip by vm.totalTip.collectAsState()
+    val peopleCount by vm.peopleCount.collectAsState()
 
     //top bar scroll behavior
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -88,6 +101,18 @@ fun NewPaymentScreen(
         }
     }
 
+    //camera capture
+    val context = LocalContext.current
+    val file = context.createImageFile()
+    val uri = FileProvider.getUriForFile(
+        Objects.requireNonNull(context),
+        BuildConfig.APPLICATION_ID + ".provider", file
+    )
+    val cameraLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
+            vm.onSavePayment(file.name, navController = navController)
+        }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -96,15 +121,40 @@ fun NewPaymentScreen(
             TopBar(scrollBehavior, navController)
         },
         bottomBar = {
-            BottomBar(vm, takeImage, navController)
+            BottomBar(vm, takeImage, navController, cameraLauncher, uri)
         }
     ) { innerPadding ->
         Content(
-            vm,
             innerPadding,
             takeImage,
-            cameraPermissionState,
-            requestPermissionLauncher
+            tipPercent,
+            amount,
+            amountError,
+            tipError,
+            currency,
+            tipPerPerson,
+            totalTip,
+            peopleCount,
+            onAmountChange = {
+                vm.updateAmount(it)
+            },
+            onTipPercentChange = {
+                vm.updateTipPercent(it)
+            },
+            onIncrementPerson = {
+                vm.incrementPeople()
+            },
+            onDecrementPerson = {
+                vm.decrementPeople()
+            },
+            onVerifyCameraPermission = {
+                verifyCameraPermission(
+                    it,
+                    cameraPermissionState,
+                    requestPermissionLauncher,
+                    vm
+                )
+            }
         )
     }
 
@@ -144,19 +194,24 @@ private fun TopBar(scrollBehavior: TopAppBarScrollBehavior, navController: NavHo
     )
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 private fun Content(
-    vm: NewPaymentViewModel,
     innerPadding: PaddingValues,
     takeImage: Boolean,
-    cameraPermissionState: PermissionState,
-    requestPermissionLauncher: ManagedActivityResultLauncher<String, Boolean>,
+    tipPercent: Double,
+    amount: Double,
+    amountError: Int,
+    tipError: Int,
+    currency: String,
+    tipPerPerson: Double,
+    totalTip: Double,
+    peopleCount: Int,
+    onAmountChange: ((Double) -> Unit),
+    onTipPercentChange: ((Double) -> Unit),
+    onIncrementPerson: (() -> Unit),
+    onDecrementPerson: (() -> Unit),
+    onVerifyCameraPermission: ((Boolean) -> Unit),
 ) {
-    val currency by vm.currency.collectAsState()
-    val tipPerPerson by vm.perPersonTip.collectAsState()
-    val totalTip by vm.totalTip.collectAsState()
-
     Column(
         modifier = Modifier
             .padding(
@@ -169,21 +224,30 @@ private fun Content(
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(compactPaddingDimensions.extraLargePadding)
     ) {
-        BorderedTextField(
-            vm = vm,
-            type = BorderedTextFieldType.AMOUNT,
+        BorderedNumberField(
+            textValue = amount,
+            errorValue = amountError,
             label = stringResource(id = R.string.enter_amount),
             leadingText = currency,
             hint = "100.00"
+        ) {
+            onAmountChange(it)
+        }
+        CounterWidget(
+            count = peopleCount,
+            label = stringResource(id = R.string.how_many_people),
+            onIncrementPerson,
+            onDecrementPerson
         )
-        CounterWidget(vm = vm, label = stringResource(id = R.string.how_many_people))
-        BorderedTextField(
-            vm = vm,
-            type = BorderedTextFieldType.TIP,
+        BorderedNumberField(
+            textValue = tipPercent,
+            errorValue = tipError,
             label = stringResource(id = R.string.tip_percent),
             trailingText = "%",
             hint = "10"
-        )
+        ) {
+            onTipPercentChange(it)
+        }
         Row {
             Text(
                 style = compactTipTypography.boldMedium,
@@ -209,12 +273,7 @@ private fun Content(
         Spacer(modifier = Modifier.weight(1f))
         Row(
             modifier = Modifier.clickable {
-                verifyCameraPermission(
-                    !takeImage,
-                    cameraPermissionState,
-                    requestPermissionLauncher,
-                    vm
-                )
+                onVerifyCameraPermission(!takeImage)
             },
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -224,7 +283,7 @@ private fun Content(
                 ),
                 checked = takeImage,
                 onCheckedChange = {
-                    verifyCameraPermission(it, cameraPermissionState, requestPermissionLauncher, vm)
+                    onVerifyCameraPermission(it)
                 },
             )
             Text(
@@ -257,7 +316,9 @@ private fun verifyCameraPermission(
 private fun BottomBar(
     vm: NewPaymentViewModel,
     takeImage: Boolean,
-    navController: NavHostController
+    navController: NavHostController,
+    cameraLauncher: ManagedActivityResultLauncher<Uri, Boolean>,
+    uri: Uri
 ) {
     val isSaving by vm.isSaving.collectAsState()
 
@@ -272,7 +333,7 @@ private fun BottomBar(
                 colors = ButtonDefaults.buttonColors(containerColor = Orange),
                 onClick = {
                     if (takeImage) {
-                        //TODO capture image first
+                        cameraLauncher.launch(uri)
                     } else {
                         vm.onSavePayment(navController = navController)
                     }

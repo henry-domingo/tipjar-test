@@ -1,6 +1,5 @@
 package com.example.tipjar.ui.screen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,17 +18,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
-import com.example.tipjar.R
+import coil.compose.AsyncImage
 import com.example.tipjar.domain.model.TipHistory
 import com.example.tipjar.ui.theme.TipJarTheme
 import com.example.tipjar.ui.theme.compactPaddingDimensions
 import com.example.tipjar.ui.theme.compactTipTypography
 import com.example.tipjar.ui.widget.PaymentRow
 import com.example.tipjar.util.TipShapes
+import com.example.tipjar.util.getFilePath
 
 @Composable
 fun PaymentPopupScreen(
@@ -37,6 +37,12 @@ fun PaymentPopupScreen(
     data: TipHistory,
     onDismissRequest: () -> Unit,
 ) {
+    val imagePath = if (data.imagePath.isNotBlank()) {
+        LocalContext.current.getFilePath(data.imagePath)
+    } else {
+        ""
+    }
+
     //TODO shared animation
     Dialog(onDismissRequest = { onDismissRequest() }) {
         // Draw a rectangle shape with rounded corners inside the dialog
@@ -51,16 +57,17 @@ fun PaymentPopupScreen(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Image(
-                    //TODO change to data image
-                    painter = painterResource(id = R.drawable.tipjar_logo),
-                    contentDescription = "image",
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .clip(TipShapes.medium)
-                        .fillMaxWidth(0.8f)
-                        .fillMaxHeight(0.5f)
-                )
+                if (imagePath.isNotBlank()) {
+                    AsyncImage(
+                        model = imagePath,
+                        contentDescription = "image",
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .clip(TipShapes.medium)
+                            .fillMaxWidth(0.8f)
+                            .fillMaxHeight(0.5f)
+                    )
+                }
                 Box(
                     modifier = Modifier
                         .background(
@@ -73,7 +80,7 @@ fun PaymentPopupScreen(
                         currency = currency,
                         item = data,
                         hideImage = true,
-                    )
+                    ) {}
                 }
                 Row(
                     modifier = Modifier

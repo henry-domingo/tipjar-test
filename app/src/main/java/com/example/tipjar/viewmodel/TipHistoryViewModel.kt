@@ -30,8 +30,12 @@ class TipHistoryViewModel(
     private val _currency = MutableStateFlow("$")
     val currency = _currency.asStateFlow()
 
-    fun onTapPayment() {
-        //TODO show dialog?
+    //pop-up state
+    private val _showDialog = MutableStateFlow<Pair<Boolean, TipHistory?>>(Pair(false, null))
+    val showDialog = _showDialog.asStateFlow()
+
+    fun toggleDialog(show: Boolean, item: TipHistory? = null) {
+        _showDialog.value = Pair(show, item)
     }
 
     fun onDeletePayment(tipToBeRemoved: TipHistory) {
