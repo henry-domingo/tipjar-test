@@ -41,4 +41,12 @@ class MainActivity : ComponentActivity() {
 
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        filesDir.listFiles()?.forEach { file ->
+            if (file.length().toInt() == 0)
+                file.delete()
+        }
+    }
 }

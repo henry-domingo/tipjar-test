@@ -6,8 +6,6 @@ import com.example.tipjar.R
 import com.example.tipjar.base.BaseViewModel
 import com.example.tipjar.domain.repository.DataStoreRepository
 import com.example.tipjar.domain.usecase.tip.CreateTipUseCase
-import com.example.tipjar.domain.usecase.tip.RemoveTipUseCase
-import com.example.tipjar.domain.usecase.tip.SearchTipUseCase
 import com.example.tipjar.util.AppScreen
 import com.example.tipjar.util.Constants.DEFAULT_CURRENCY
 import com.example.tipjar.util.Constants.SP_CURRENCY_KEY
@@ -19,13 +17,8 @@ import kotlinx.coroutines.launch
 
 class NewPaymentViewModel(
     private val createTipUseCase: CreateTipUseCase,
-    private val removeTipUseCase: RemoveTipUseCase,
-    private val searchTipUseCase: SearchTipUseCase,
     private val datastoreRepository: DataStoreRepository,
 ) : BaseViewModel() {
-
-    //TODO include to DB
-    private var imagePath = ""
 
     // total tip state
     private val _totalTip = MutableStateFlow(0.0)
@@ -112,12 +105,6 @@ class NewPaymentViewModel(
                 _isSaving.value = false
                 navController.navigate(AppScreen.PAYMENT_LIST.name)
             }
-        }
-    }
-
-    fun onSaveCurrency(currency: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            datastoreRepository.putString(SP_CURRENCY_KEY, currency)
         }
     }
 

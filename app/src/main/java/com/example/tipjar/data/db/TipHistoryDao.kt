@@ -18,6 +18,6 @@ interface TipHistoryDao {
     @Query("SELECT * FROM tip_history ORDER BY timestamp DESC")
     fun findAll(): Flow<List<TipHistory>>
 
-    @Query("SELECT * FROM tip_history WHERE timestamp BETWEEN :dateStart AND :dateEnd")
+    @Query("SELECT * FROM tip_history WHERE timestamp BETWEEN :dateStart AND :dateEnd ORDER BY timestamp DESC")
     fun findByDate(dateStart: Long, dateEnd: Long): Flow<List<TipHistory>>
 }

@@ -36,6 +36,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -65,6 +66,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import org.koin.androidx.compose.koinViewModel
+import java.io.File
 import java.util.Objects
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
@@ -103,13 +105,13 @@ fun NewPaymentScreen(
 
     //camera capture
     val context = LocalContext.current
-    val file = context.createImageFile()
+    val file = remember { context.createImageFile() }
     val uri = FileProvider.getUriForFile(
         Objects.requireNonNull(context),
         BuildConfig.APPLICATION_ID + ".provider", file
     )
     val cameraLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
+        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { _ ->
             vm.onSavePayment(file.name, navController = navController)
         }
 
@@ -121,7 +123,7 @@ fun NewPaymentScreen(
             TopBar(scrollBehavior, navController)
         },
         bottomBar = {
-            BottomBar(vm, takeImage, navController, cameraLauncher, uri)
+            BottomBar(vm, takeImage, navController, cameraLauncher, uri, file)
         }
     ) { innerPadding ->
         Content(
@@ -318,7 +320,8 @@ private fun BottomBar(
     takeImage: Boolean,
     navController: NavHostController,
     cameraLauncher: ManagedActivityResultLauncher<Uri, Boolean>,
-    uri: Uri
+    uri: Uri,
+    file: File,
 ) {
     val isSaving by vm.isSaving.collectAsState()
 
@@ -335,6 +338,7 @@ private fun BottomBar(
                     if (takeImage) {
                         cameraLauncher.launch(uri)
                     } else {
+                        file.delete()
                         vm.onSavePayment(navController = navController)
                     }
                 }) {

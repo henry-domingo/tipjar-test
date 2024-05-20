@@ -5,7 +5,7 @@ apply plugin: 'kotlin-parcelize'
 
 android {
     defaultConfig {
-        applicationId "com.example.tipjar"
+        applicationId "com.henryjr.tipjar"
         compileSdk 34
         minSdkVersion 21
         targetSdkVersion 34

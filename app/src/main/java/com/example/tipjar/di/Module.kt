@@ -46,8 +46,8 @@ val useCaseModule = module {
 }
 
 val viewModelModule = module {
-    viewModel { TipHistoryViewModel(get(), get(), get(), get()) }
-    viewModel { NewPaymentViewModel(get(), get(), get(), get()) }
+    viewModel { TipHistoryViewModel(get(), get(), get()) }
+    viewModel { NewPaymentViewModel(get(), get()) }
 }
 
 val validationModule = module {
