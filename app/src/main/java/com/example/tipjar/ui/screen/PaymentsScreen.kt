@@ -1,5 +1,6 @@
 package com.example.tipjar.ui.screen
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -57,7 +58,10 @@ import com.example.tipjar.util.TipShapes
 import com.example.tipjar.viewmodel.TipHistoryViewModel
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
+    ExperimentalSharedTransitionApi::class
+)
 @Composable
 fun PaymentsScreen(
     vm: TipHistoryViewModel = koinViewModel(),
@@ -169,60 +173,71 @@ fun PaymentsScreen(
                         },
                         modifier = Modifier.animateItemPlacement()
                     ) {
-                        PaymentRow(item = data, currency = currency) {
+                        PaymentRow(
+                            item = data,
+                            currency = currency,
+                        ) {
                             vm.toggleItemDialog(true, it)
                         }
                     }
                 }
             }
         }
-    }
 
-    if (showDialog.first && showDialog.second != null) {
-        PaymentPopupScreen(currency = currency, data = showDialog.second!!) {
-            vm.toggleItemDialog(false)
-        }
-    }
-
-    if (showDatePicker.first) {
-        Dialog(onDismissRequest = {
-            vm.toggleDateDialog(false)
-        }) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.5f)
-                    .padding(compactPaddingDimensions.largePadding),
-                shape = TipShapes.large,
+        if (showDialog.first) {
+            PaymentPopupScreen(
+                currency = currency,
+                data = showDialog.second!!,
             ) {
-                DateRangePicker(
-                    modifier = Modifier.weight(1f),
-                    state = dateRangeState,
-                    title = {
-                    },
-                )
-                Button(
+                vm.toggleItemDialog(false)
+            }
+        }
+
+        if (showDatePicker.first) {
+            Dialog(onDismissRequest = {
+                vm.toggleDateDialog(false)
+            }) {
+                Card(
                     modifier = Modifier
-                        .align(Alignment.End)
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.5f)
                         .padding(compactPaddingDimensions.largePadding),
-                    onClick = {
-                        vm.toggleDateDialog(
-                            false,
-                            dateRangeState.selectedStartDateMillis,
-                            dateRangeState.selectedEndDateMillis
-                        )
-                    }
+                    shape = TipShapes.large,
                 ) {
-                    Text(text = stringResource(id = R.string.search))
+                    DateRangePicker(
+                        modifier = Modifier.weight(1f),
+                        state = dateRangeState,
+                        title = {},
+                        headline = {
+                            Text(
+                                modifier = Modifier.padding(start = compactPaddingDimensions.largePadding),
+                                text = stringResource(id = R.string.pick_date)
+                            )
+                        },
+                    )
+                    Button(
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .padding(compactPaddingDimensions.largePadding),
+                        onClick = {
+                            vm.toggleDateDialog(
+                                false,
+                                dateRangeState.selectedStartDateMillis,
+                                dateRangeState.selectedEndDateMillis
+                            )
+                        }
+                    ) {
+                        Text(text = stringResource(id = R.string.search))
+                    }
                 }
             }
         }
-    }
 
-    vm.onShowAllPayments(startDate = showDatePicker.second, endDate = showDatePicker.third)
-    LaunchedEffect(key1 = true, block = {
-        vm.onGetCurrency()
-    })
+        vm.onShowAllPayments(startDate = showDatePicker.second, endDate = showDatePicker.third)
+        LaunchedEffect(key1 = true, block = {
+            vm.onGetCurrency()
+        })
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

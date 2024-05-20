@@ -17,4 +17,5 @@
     <string name="no_payments">There\'s nothing here.\nTap the button below to add a new payment.</string>
     <string name="search">Search</string>
     <string name="no_payments_search">There are no payments matching the searched date range.</string>
+    <string name="pick_date">Pick Date Range</string>
 </resources>

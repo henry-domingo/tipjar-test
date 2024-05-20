@@ -9,3 +9,8 @@ enum class AppScreen() {
     NEW_PAYMENT,
     PAYMENT_LIST
 }
+
+enum class SharedElementKey() {
+    IMAGE,
+    CONTENT,
+}
