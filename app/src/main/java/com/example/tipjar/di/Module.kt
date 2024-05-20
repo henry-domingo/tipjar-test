@@ -7,6 +7,7 @@ import com.example.tipjar.data.repository.DataStoreRepositoryImpl
 import com.example.tipjar.data.repository.TipRepositoryImpl
 import com.example.tipjar.domain.repository.DataStoreRepository
 import com.example.tipjar.domain.repository.TipRepository
+import com.example.tipjar.domain.usecase.JSONAssetToObjectListUseCase
 import com.example.tipjar.domain.usecase.tip.CreateTipUseCase
 import com.example.tipjar.domain.usecase.tip.RemoveTipUseCase
 import com.example.tipjar.domain.usecase.tip.SearchTipUseCase
@@ -43,11 +44,12 @@ val useCaseModule = module {
     factory { CreateTipUseCase(get()) }
     factory { RemoveTipUseCase(get()) }
     factory { SearchTipUseCase(get()) }
+    factory { JSONAssetToObjectListUseCase() }
 }
 
 val viewModelModule = module {
     viewModel { TipHistoryViewModel(get(), get(), get()) }
-    viewModel { NewPaymentViewModel(get(), get()) }
+    viewModel { NewPaymentViewModel(get(), get(), get()) }
 }
 
 val validationModule = module {

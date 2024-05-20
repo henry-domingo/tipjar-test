@@ -8,8 +8,8 @@
     <string name="per_person">Per Person</string>
     <string name="take_photo_receipt">Take Photo of Receipt</string>
     <string name="saved_payments">Saved Payments</string>
-    <string name="currency_amount_tip">Tip : %1$s%2$.2f</string>
-    <string name="currency_amount">%1$s%2$.2f</string>
+    <string name="currency_amount_tip">Tip : %1$s %2$.2f</string>
+    <string name="currency_amount">%1$s %2$.2f</string>
     <string name="camera_rationale">Kindly grant the CAMERA permission in your phone settings to enable receipt capture.</string>
     <string name="got_it">Got it</string>
     <string name="please_wait">Please wait…</string>
@@ -18,4 +18,7 @@
     <string name="search">Search</string>
     <string name="no_payments_search">There are no payments matching the searched date range.</string>
     <string name="pick_date">Pick Date Range</string>
+    <string name="search_currency">Search Currency…</string>
+    <string name="currency_not_found">Currency not found</string>
+    <string name="close">close</string>
 </resources>

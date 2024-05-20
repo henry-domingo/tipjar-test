@@ -2,6 +2,7 @@ package com.example.tipjar.ui.widget
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,6 +40,7 @@ fun BorderedNumberField(
     trailingText: String = "",
     hint: String = "",
     onValueChange: ((Double) -> Unit),
+    onTapLeadingIcon: (() -> Unit)? = null,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -54,7 +56,11 @@ fun BorderedNumberField(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                modifier = Modifier.defaultMinSize(minWidth = 12.dp),
+                modifier = Modifier
+                    .defaultMinSize(minWidth = 12.dp)
+                    .clickable {
+                        onTapLeadingIcon?.invoke()
+                    },
                 text = leadingText,
                 style = compactTipTypography.regularExtraLarge
             )

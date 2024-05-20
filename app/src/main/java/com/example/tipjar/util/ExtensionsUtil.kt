@@ -1,6 +1,8 @@
 package com.example.tipjar.util
 
 import android.content.Context
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -22,3 +24,6 @@ fun Context.createImageFile(): File {
 }
 
 fun Context.getFilePath(fileName: String): String = File(filesDir, fileName).absolutePath
+
+inline fun <reified T> Gson.fromJson(json: String) =
+    fromJson<T>(json, object : TypeToken<T>() {}.type)

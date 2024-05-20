@@ -36,7 +36,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -50,14 +52,17 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.tipjar.BuildConfig
 import com.example.tipjar.R
+import com.example.tipjar.domain.model.Currency
 import com.example.tipjar.ui.theme.Orange
 import com.example.tipjar.ui.theme.TipJarTheme
 import com.example.tipjar.ui.theme.compactPaddingDimensions
 import com.example.tipjar.ui.theme.compactTipTypography
 import com.example.tipjar.ui.widget.BorderedNumberField
 import com.example.tipjar.ui.widget.CounterWidget
+import com.example.tipjar.ui.widget.SearchDialog
 import com.example.tipjar.ui.widget.SimpleDialog
 import com.example.tipjar.util.AppScreen
+import com.example.tipjar.util.Constants.ASSET_CURRENCY_JSON_FILENAME
 import com.example.tipjar.util.createImageFile
 import com.example.tipjar.viewmodel.NewPaymentViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -75,6 +80,8 @@ fun NewPaymentScreen(
     vm: NewPaymentViewModel = koinViewModel(),
     navController: NavHostController
 ) {
+    val assets = LocalContext.current.assets
+
     //states
     val takeImage by vm.takeImage.collectAsState()
     val showRationale by vm.showRationale.collectAsState()
@@ -86,6 +93,10 @@ fun NewPaymentScreen(
     val tipPerPerson by vm.perPersonTip.collectAsState()
     val totalTip by vm.totalTip.collectAsState()
     val peopleCount by vm.peopleCount.collectAsState()
+    val currencyList by vm.currencyList.collectAsState()
+    val searchResults by vm.searchResults.collectAsState()
+    var showSearch by remember { mutableStateOf(false) }
+    var searchTerm by remember { mutableStateOf("") }
 
     //top bar scroll behavior
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -120,7 +131,9 @@ fun NewPaymentScreen(
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            TopBar(scrollBehavior, navController)
+            TopBar(scrollBehavior, navController, currencyList) {
+                showSearch = true
+            }
         },
         bottomBar = {
             BottomBar(vm, takeImage, navController, cameraLauncher, uri, file)
@@ -156,12 +169,16 @@ fun NewPaymentScreen(
                     requestPermissionLauncher,
                     vm
                 )
+            },
+            onTapCurrency = {
+                showSearch = true
             }
         )
     }
 
     LaunchedEffect(key1 = true, block = {
         vm.onGetCurrency()
+        vm.loadCurrencyList(assets.open(ASSET_CURRENCY_JSON_FILENAME))
     })
 
     if (showRationale) {
@@ -169,21 +186,57 @@ fun NewPaymentScreen(
             vm.showRationale(false)
         }
     }
+
+    if (showSearch) {
+        SearchDialog(
+            searchTerm,
+            searchResults,
+            onCancel = {
+                showSearch = false
+            },
+            onSearch = {
+                searchTerm = it
+                vm.onSearchCurrency(it)
+            },
+            onPickCurrency = {
+                showSearch = false
+                vm.onSaveCurrency(it)
+                searchTerm = ""
+                vm.onSearchCurrency(searchTerm)
+            })
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TopBar(scrollBehavior: TopAppBarScrollBehavior, navController: NavHostController) {
+private fun TopBar(
+    scrollBehavior: TopAppBarScrollBehavior,
+    navController: NavHostController,
+    currencyList: List<Currency>,
+    onTapSearch: () -> Unit,
+) {
     TopAppBar(
         scrollBehavior = scrollBehavior,
+        navigationIcon = {
+            Spacer(modifier = Modifier.fillMaxWidth(0.35f))
+        },
         title = {
             Image(
-                modifier = Modifier.fillMaxWidth(),
                 painter = painterResource(id = R.drawable.tipjar_logo),
                 contentDescription = "logo"
             )
         },
         actions = {
+            if (currencyList.isNotEmpty()) {
+                IconButton(onClick = {
+                    onTapSearch()
+                }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_currency),
+                        contentDescription = "history"
+                    )
+                }
+            }
             IconButton(onClick = {
                 navController.navigate(AppScreen.PAYMENT_LIST.name)
             }) {
@@ -213,6 +266,7 @@ private fun Content(
     onIncrementPerson: (() -> Unit),
     onDecrementPerson: (() -> Unit),
     onVerifyCameraPermission: ((Boolean) -> Unit),
+    onTapCurrency: (() -> Unit),
 ) {
     Column(
         modifier = Modifier
@@ -231,9 +285,12 @@ private fun Content(
             errorValue = amountError,
             label = stringResource(id = R.string.enter_amount),
             leadingText = currency,
-            hint = "100.00"
+            hint = "100.00",
+            onValueChange = {
+                onAmountChange(it)
+            },
         ) {
-            onAmountChange(it)
+            onTapCurrency()
         }
         CounterWidget(
             count = peopleCount,
@@ -246,10 +303,11 @@ private fun Content(
             errorValue = tipError,
             label = stringResource(id = R.string.tip_percent),
             trailingText = "%",
-            hint = "10"
-        ) {
-            onTipPercentChange(it)
-        }
+            hint = "10",
+            onValueChange = {
+                onTipPercentChange(it)
+            },
+        )
         Row {
             Text(
                 style = compactTipTypography.boldMedium,

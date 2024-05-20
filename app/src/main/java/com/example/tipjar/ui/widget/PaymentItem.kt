@@ -37,8 +37,7 @@ fun PaymentItem(
         ) {
             Text(
                 modifier = Modifier
-                    .alignBy(LastBaseline)
-                    .weight(1f),
+                    .alignBy(LastBaseline),
                 text = stringResource(id = R.string.currency_amount, currency, item.amount),
                 style = compactTipTypography.boldExtraLarge
             )
@@ -49,7 +48,7 @@ fun PaymentItem(
             } else {
                 Modifier.alignBy(LastBaseline)
             }
-
+            Spacer(modifier = Modifier.weight(0.5f))
             Text(
                 modifier = modifierLastText,
                 text = stringResource(id = R.string.currency_amount_tip, currency, item.tip),

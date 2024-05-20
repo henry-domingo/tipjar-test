@@ -76,7 +76,7 @@ fun PaymentPopupScreen(
                 Card {
                     PaymentItem(
                         modifier = Modifier
-                            .fillMaxWidth(0.7f)
+                            .fillMaxWidth(0.8f)
                             .padding(compactPaddingDimensions.extraMediumPadding),
                         currency = currency,
                         isDisplayedInRow = false,

@@ -4,7 +4,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.example.tipjar.R
 import com.example.tipjar.base.BaseViewModel
+import com.example.tipjar.domain.model.Currency
 import com.example.tipjar.domain.repository.DataStoreRepository
+import com.example.tipjar.domain.usecase.JSONAssetToObjectListUseCase
 import com.example.tipjar.domain.usecase.tip.CreateTipUseCase
 import com.example.tipjar.util.AppScreen
 import com.example.tipjar.util.Constants.DEFAULT_CURRENCY
@@ -14,9 +16,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.io.InputStream
 
 class NewPaymentViewModel(
     private val createTipUseCase: CreateTipUseCase,
+    private val jsonAssetToObjectListUseCase: JSONAssetToObjectListUseCase,
     private val datastoreRepository: DataStoreRepository,
 ) : BaseViewModel() {
 
@@ -61,6 +65,14 @@ class NewPaymentViewModel(
     val amountError = _amountError.asStateFlow()
     private val _tipError = MutableStateFlow(-1)
     val tipError = _tipError.asStateFlow()
+
+    //currency list json state
+    private val _currencyList = MutableStateFlow((listOf<Currency>()))
+    val currencyList = _currencyList.asStateFlow()
+
+    //currency search result state
+    private val _searchResults = MutableStateFlow((listOf<Currency>()))
+    val searchResults = _searchResults.asStateFlow()
 
     fun showRationale(show: Boolean) {
         _showRationale.value = show
@@ -113,6 +125,38 @@ class NewPaymentViewModel(
             datastoreRepository.getString(SP_CURRENCY_KEY, DEFAULT_CURRENCY).collectLatest { data ->
                 _currency.tryEmit(data)
             }
+        }
+    }
+
+    fun loadCurrencyList(inputStream: InputStream) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val data = jsonAssetToObjectListUseCase.invoke<Currency>(
+                Currency::class.java,
+                inputStream = inputStream
+            ).values.toList()
+            _currencyList.value = data
+            _searchResults.value = data
+        }
+    }
+
+    fun onSearchCurrency(term: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (term.isNotBlank()) {
+                _searchResults.value = _currencyList.value.filter {
+                    it.code.contains(term, true) || it.name.contains(
+                        term,
+                        true
+                    ) || it.symbol.contains(term, true)
+                }
+            } else {
+                _searchResults.value = _currencyList.value
+            }
+        }
+    }
+
+    fun onSaveCurrency(currency: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            datastoreRepository.putString(SP_CURRENCY_KEY, currency)
         }
     }
 

@@ -74,12 +74,6 @@ class TipHistoryViewModel(
         }
     }
 
-    fun onSaveCurrency(currency: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            datastoreRepository.putString(SP_CURRENCY_KEY, currency)
-        }
-    }
-
     fun onGetCurrency() {
         viewModelScope.launch(Dispatchers.IO) {
             datastoreRepository.getString(SP_CURRENCY_KEY, DEFAULT_CURRENCY).collectLatest { data ->
