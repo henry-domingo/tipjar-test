@@ -1,5 +1,6 @@
 package com.example.tipjar.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tipjar.domain.model.TipHistory
@@ -8,6 +9,7 @@ import com.example.tipjar.domain.usecase.tip.RemoveTipUseCase
 import com.example.tipjar.domain.usecase.tip.SearchTipUseCase
 import com.example.tipjar.util.Constants.DEFAULT_CURRENCY
 import com.example.tipjar.util.Constants.SP_CURRENCY_KEY
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,6 +30,12 @@ class TipHistoryViewModel(
     private val searchTipUseCase: SearchTipUseCase,
     private val datastoreRepository: DataStoreRepository,
 ) : ViewModel() {
+
+    //coroutine exception handler
+    val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        Log.e(TipHistoryViewModel::class.java.simpleName, throwable.localizedMessage, throwable)
+    }
+
     var filesDirectory: File? = null
 
     //payments state
@@ -79,7 +87,7 @@ class TipHistoryViewModel(
      * @param tipToBeRemoved tip to be removed
      */
     fun onDeletePayment(tipToBeRemoved: TipHistory) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(exceptionHandler) {
             removeTipUseCase.invoke(tipToBeRemoved)
             File(filesDirectory, tipToBeRemoved.imagePath).delete()
         }
@@ -93,14 +101,12 @@ class TipHistoryViewModel(
      * @param endDate
      */
     fun onShowAllPayments(startDate: Long? = null, endDate: Long? = null) {
-        if (startDate != null && endDate != null) {
-            viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(exceptionHandler) {
+            if (startDate != null && endDate != null) {
                 searchTipUseCase.invoke(startDate, endDate).collectLatest { data ->
                     _payments.tryEmit(data)
                 }
-            }
-        } else {
-            viewModelScope.launch(Dispatchers.IO) {
+            } else {
                 searchTipUseCase.invoke().collectLatest { data ->
                     _payments.tryEmit(data)
                 }
@@ -113,7 +119,7 @@ class TipHistoryViewModel(
      *
      */
     fun onGetCurrency() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             datastoreRepository.getString(SP_CURRENCY_KEY, DEFAULT_CURRENCY).collectLatest { data ->
                 _currency.tryEmit(data)
             }

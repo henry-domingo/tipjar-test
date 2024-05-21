@@ -1,5 +1,6 @@
 package com.example.tipjar.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
@@ -11,6 +12,7 @@ import com.example.tipjar.domain.usecase.tip.CreateTipUseCase
 import com.example.tipjar.util.AppScreen
 import com.example.tipjar.util.Constants.DEFAULT_CURRENCY
 import com.example.tipjar.util.Constants.SP_CURRENCY_KEY
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,6 +33,11 @@ class NewPaymentViewModel(
     private val jsonAssetToObjectListUseCase: JSONAssetToObjectListUseCase,
     private val datastoreRepository: DataStoreRepository,
 ) : ViewModel() {
+
+    //coroutine exception handler
+    val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        Log.e(TipHistoryViewModel::class.java.simpleName, throwable.localizedMessage, throwable)
+    }
 
     // total tip state
     private val _totalTip = MutableStateFlow(0.0)
@@ -154,12 +161,10 @@ class NewPaymentViewModel(
         }
 
         _isSaving.value = true
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(exceptionHandler) {
             createTipUseCase.invoke(_amount.value, _totalTip.value, imagePath)
-            viewModelScope.launch(Dispatchers.Main) {
-                _isSaving.value = false
-                navController.navigate(AppScreen.PAYMENT_LIST.name)
-            }
+            _isSaving.value = false
+            navController.navigate(AppScreen.PAYMENT_LIST.name)
         }
     }
 
@@ -168,7 +173,7 @@ class NewPaymentViewModel(
      *
      */
     fun onGetCurrency() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             datastoreRepository.getString(SP_CURRENCY_KEY, DEFAULT_CURRENCY).collectLatest { data ->
                 _currency.tryEmit(data)
             }
@@ -181,8 +186,8 @@ class NewPaymentViewModel(
      * @param inputStream
      */
     fun loadCurrencyList(inputStream: InputStream) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val data = jsonAssetToObjectListUseCase.invoke<Currency>(
+        viewModelScope.launch(exceptionHandler) {
+            val data = jsonAssetToObjectListUseCase.invoke(
                 Currency::class.java,
                 inputStream = inputStream
             ).values.toList()
@@ -197,7 +202,7 @@ class NewPaymentViewModel(
      * @param term
      */
     fun onSearchCurrency(term: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             if (term.isNotBlank()) {
                 _searchResults.value = _currencyList.value.filter {
                     it.code.contains(term, true) || it.name.contains(
@@ -217,7 +222,7 @@ class NewPaymentViewModel(
      * @param currency
      */
     fun onSaveCurrency(currency: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             datastoreRepository.putString(SP_CURRENCY_KEY, currency)
         }
     }
