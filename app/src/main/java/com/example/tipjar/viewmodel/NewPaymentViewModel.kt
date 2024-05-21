@@ -35,7 +35,7 @@ class NewPaymentViewModel(
 ) : ViewModel() {
 
     //coroutine exception handler
-    val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         Log.e(TipHistoryViewModel::class.java.simpleName, throwable.localizedMessage, throwable)
     }
 
