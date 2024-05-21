@@ -6,6 +6,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
+/**
+ * Use case for Searching tips
+ *
+ * @property repository
+ * @constructor Create empty Search tip use case
+ */
 class SearchTipUseCase(private val repository: TipRepository) {
     suspend fun invoke(): Flow<List<TipHistory>> {
         return withContext(Dispatchers.IO) {

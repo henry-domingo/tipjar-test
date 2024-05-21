@@ -24,7 +24,7 @@ data class TipTypography(
     val boldXXL: TextStyle,
 )
 
-// Phone width < 600
+// <600 width
 val compactTipTypography = TipTypography(
     regularExtraSmall = getRegularTextStyle(12.sp),
     regularSmall = getRegularTextStyle(14.sp),

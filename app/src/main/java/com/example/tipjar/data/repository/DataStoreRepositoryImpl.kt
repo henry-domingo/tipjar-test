@@ -14,6 +14,12 @@ private const val PREFERENCES_NAME = "tipjar_preferences"
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = PREFERENCES_NAME)
 
+/**
+ * Implementation of [DataStoreRepository]
+ *
+ * @property context
+ * @constructor Create empty Data store repository impl
+ */
 class DataStoreRepositoryImpl(
     private val context: Context
 ) : DataStoreRepository {

@@ -4,10 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.getValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.tipjar.ui.screen.NewPaymentScreen
 import com.example.tipjar.ui.screen.PaymentsScreen
@@ -21,7 +19,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
-            val navBackStackEntry by navController.currentBackStackEntryAsState()
 
             NavHost(
                 navController = navController,
@@ -44,6 +41,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        // clean up temporary files
         filesDir.listFiles()?.forEach { file ->
             if (file.length().toInt() == 0)
                 file.delete()

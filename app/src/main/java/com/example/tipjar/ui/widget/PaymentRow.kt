@@ -1,6 +1,5 @@
 package com.example.tipjar.ui.widget
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -20,7 +19,15 @@ import com.example.tipjar.ui.theme.compactPaddingDimensions
 import com.example.tipjar.util.TipShapes
 import com.example.tipjar.util.getFilePath
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+/**
+ * Composable function to display a payment row.
+ *
+ * @param modifier
+ * @param currency currency symbol
+ * @param item [TipHistory] instance
+ * @param onClick callback function to handle the row click
+ * @receiver
+ */
 @Composable
 fun PaymentRow(
     modifier: Modifier = Modifier,

@@ -17,6 +17,16 @@ import com.example.tipjar.ui.theme.Gray2
 import com.example.tipjar.ui.theme.Orange
 import com.example.tipjar.ui.theme.compactTipTypography
 
+/**
+ * Composable function for the counter widget.
+ *
+ * @param count current value of the counter
+ * @param label label for the counter
+ * @param increment callback function to increment the counter
+ * @param decrement callback function to decrement the counter
+ * @receiver
+ * @receiver
+ */
 @Composable
 fun CounterWidget(
     count: Int,
@@ -64,11 +74,3 @@ fun CounterWidget(
         }
     }
 }
-
-//@Preview
-//@Composable
-//fun CounterWidgetPreview() {
-//    TipJarTheme {
-//        CounterWidget(label = "Sample label")
-//    }
-//}

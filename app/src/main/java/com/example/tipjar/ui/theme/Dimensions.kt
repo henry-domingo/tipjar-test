@@ -14,6 +14,7 @@ class TipPaddingDimensions(
     val extraWidePadding: Dp,
 )
 
+// <600 width
 val compactPaddingDimensions = TipPaddingDimensions(
     tinyPadding = 2.dp,
     smallPadding = 4.dp,
@@ -24,3 +25,5 @@ val compactPaddingDimensions = TipPaddingDimensions(
     widePadding = 32.dp,
     extraWidePadding = 64.dp,
 )
+
+// We can define other dimensions here - like for medium-sized phones or tablets

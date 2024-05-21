@@ -1,9 +1,9 @@
 package com.example.tipjar.viewmodel
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.example.tipjar.R
-import com.example.tipjar.base.BaseViewModel
 import com.example.tipjar.domain.model.Currency
 import com.example.tipjar.domain.repository.DataStoreRepository
 import com.example.tipjar.domain.usecase.JSONAssetToObjectListUseCase
@@ -18,11 +18,19 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.io.InputStream
 
+/**
+ * View Model for New Payment
+ *
+ * @property createTipUseCase
+ * @property jsonAssetToObjectListUseCase
+ * @property datastoreRepository
+ * @constructor Create empty New payment view model
+ */
 class NewPaymentViewModel(
     private val createTipUseCase: CreateTipUseCase,
     private val jsonAssetToObjectListUseCase: JSONAssetToObjectListUseCase,
     private val datastoreRepository: DataStoreRepository,
-) : BaseViewModel() {
+) : ViewModel() {
 
     // total tip state
     private val _totalTip = MutableStateFlow(0.0)
@@ -74,36 +82,71 @@ class NewPaymentViewModel(
     private val _searchResults = MutableStateFlow((listOf<Currency>()))
     val searchResults = _searchResults.asStateFlow()
 
+    /**
+     * Shows rationale
+     *
+     * @param show
+     */
     fun showRationale(show: Boolean) {
         _showRationale.value = show
     }
 
+    /**
+     * Toggles image capture
+     *
+     */
     fun toggleImageCapture() {
         _takeImage.value = !_takeImage.value
     }
 
+    /**
+     * Update amount. This will also update the tip
+     *
+     * @param newAmount
+     */
     fun updateAmount(newAmount: Double) {
         _amount.value = newAmount
         _amountError.value = -1
         compute()
     }
 
+    /**
+     * Increment people counter. This will also update the tip
+     *
+     */
     fun incrementPeople() {
         _peopleCount.value++
         compute()
     }
 
+    /**
+     * Decrement people counter. This will also update the tip
+     *
+     */
     fun decrementPeople() {
         _peopleCount.value--
         compute()
     }
 
+    /**
+     * Update tip percent. This will also update the tip
+     *
+     * @param newTipPercent
+     */
     fun updateTipPercent(newTipPercent: Double) {
         _tipPercent.value = newTipPercent
         _tipError.value = -1
         compute()
     }
 
+    /**
+     * Called when the save button is clicked.
+     * This will save the tip to the database.
+     * Upon saving, it will navigate to the payment list screen.
+     *
+     * @param imagePath defaults to an empty string if there is no image to save
+     * @param navController
+     */
     fun onSavePayment(imagePath: String = "", navController: NavHostController) {
         if (_amount.value == 0.0) {
             _amountError.value = R.string.error_amount
@@ -120,6 +163,10 @@ class NewPaymentViewModel(
         }
     }
 
+    /**
+     * Called when the currency is clicked. This will update the currency state.
+     *
+     */
     fun onGetCurrency() {
         viewModelScope.launch(Dispatchers.IO) {
             datastoreRepository.getString(SP_CURRENCY_KEY, DEFAULT_CURRENCY).collectLatest { data ->
@@ -128,6 +175,11 @@ class NewPaymentViewModel(
         }
     }
 
+    /**
+     * Loads currency list from JSON asset. This will also update the currency list state.
+     *
+     * @param inputStream
+     */
     fun loadCurrencyList(inputStream: InputStream) {
         viewModelScope.launch(Dispatchers.IO) {
             val data = jsonAssetToObjectListUseCase.invoke<Currency>(
@@ -139,6 +191,11 @@ class NewPaymentViewModel(
         }
     }
 
+    /**
+     * Called when the search text changes. This will update the search results state.
+     *
+     * @param term
+     */
     fun onSearchCurrency(term: String) {
         viewModelScope.launch(Dispatchers.IO) {
             if (term.isNotBlank()) {
@@ -154,12 +211,21 @@ class NewPaymentViewModel(
         }
     }
 
+    /**
+     * Called when a currency is selected. This will update the currency state.
+     *
+     * @param currency
+     */
     fun onSaveCurrency(currency: String) {
         viewModelScope.launch(Dispatchers.IO) {
             datastoreRepository.putString(SP_CURRENCY_KEY, currency)
         }
     }
 
+    /**
+     * Computes the total tip and per person tip.
+     *
+     */
     private fun compute() {
         _totalTip.value = _amount.value * (_tipPercent.value / 100)
         _perPersonTip.value = _totalTip.value / _peopleCount.value

@@ -1,6 +1,5 @@
 package com.example.tipjar.ui.screen
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,7 +30,14 @@ import com.example.tipjar.ui.theme.compactTipTypography
 import com.example.tipjar.ui.widget.PaymentItem
 import com.example.tipjar.util.getFilePath
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+/**
+ * Dialog for displaying tip details
+ *
+ * @param currency
+ * @param data
+ * @param onDismissRequest
+ * @receiver
+ */
 @Composable
 fun PaymentPopupScreen(
     currency: String,

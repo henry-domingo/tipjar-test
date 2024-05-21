@@ -45,16 +45,13 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.content.FileProvider
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.tipjar.BuildConfig
 import com.example.tipjar.R
 import com.example.tipjar.domain.model.Currency
 import com.example.tipjar.ui.theme.Orange
-import com.example.tipjar.ui.theme.TipJarTheme
 import com.example.tipjar.ui.theme.compactPaddingDimensions
 import com.example.tipjar.ui.theme.compactTipTypography
 import com.example.tipjar.ui.widget.BorderedNumberField
@@ -74,6 +71,12 @@ import org.koin.androidx.compose.koinViewModel
 import java.io.File
 import java.util.Objects
 
+/**
+ * New payment screen. First screen.
+ *
+ * @param vm
+ * @param navController
+ */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun NewPaymentScreen(
@@ -411,13 +414,5 @@ private fun BottomBar(
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun NewPaymentScreenPreview() {
-    TipJarTheme {
-        NewPaymentScreen(navController = rememberNavController())
     }
 }

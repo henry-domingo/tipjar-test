@@ -17,6 +17,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.loadKoinModules
 import org.koin.dsl.module
 
+// inject feature
 fun injectFeature() = loadFeature
 
 private val loadFeature by lazy {
@@ -26,7 +27,6 @@ private val loadFeature by lazy {
             repositoryModule,
             useCaseModule,
             viewModelModule,
-            validationModule
         )
     )
 }
@@ -50,8 +50,4 @@ val useCaseModule = module {
 val viewModelModule = module {
     viewModel { TipHistoryViewModel(get(), get(), get()) }
     viewModel { NewPaymentViewModel(get(), get(), get()) }
-}
-
-val validationModule = module {
-//    factory { FormValidation() }
 }

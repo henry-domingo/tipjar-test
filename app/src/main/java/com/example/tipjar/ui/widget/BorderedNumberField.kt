@@ -25,11 +25,19 @@ import com.example.tipjar.ui.theme.Gray
 import com.example.tipjar.ui.theme.compactTipTypography
 import com.example.tipjar.util.TipShapes
 
-enum class BorderedTextFieldType {
-    AMOUNT,
-    TIP
-}
-
+/**
+ * Composable for bordered numeric input field
+ *
+ * @param textValue Value of the input
+ * @param errorValue Error message
+ * @param label Label displayed at the top of the field
+ * @param leadingText text or symbol to be shown before the input
+ * @param trailingText text or symbol to be shown after the input
+ * @param hint Hint of the input
+ * @param onValueChange Callback whenever the value changes
+ * @param onTapLeadingIcon callback to be invoked when the leading icon is clicked
+ * @receiver
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BorderedNumberField(
@@ -107,13 +115,3 @@ fun BorderedNumberField(
         }
     }
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun BorderedTextFieldPreview() {
-//    TipJarTheme {
-//        BorderedTextField(
-//            label = "Label", leadingText = "$", trailingText = "%", hint = "100.00"
-//        )
-//    }
-//}

@@ -6,12 +6,12 @@ object Constants {
     const val ASSET_CURRENCY_JSON_FILENAME = "currencies.json"
 }
 
+/**
+ * App screen enum for navigation
+ *
+ * @constructor Create empty App screen
+ */
 enum class AppScreen() {
     NEW_PAYMENT,
     PAYMENT_LIST
-}
-
-enum class SharedElementKey() {
-    IMAGE,
-    CONTENT,
 }

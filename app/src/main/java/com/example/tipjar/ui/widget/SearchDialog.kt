@@ -30,6 +30,18 @@ import com.example.tipjar.ui.theme.compactPaddingDimensions
 import com.example.tipjar.ui.theme.compactTipTypography
 import com.example.tipjar.util.TipShapes
 
+/**
+ * Composable to display a search dialog.
+ *
+ * @param searchTerm The current search term.
+ * @param searchResult The list of currencies that match the search term.
+ * @param onCancel Called when the user cancels the search.
+ * @param onSearch callback whenever the user types in the search bar
+ * @param onPickCurrency callback when the user tapped an item in the result
+ * @receiver
+ * @receiver
+ * @receiver
+ */
 @Composable
 fun SearchDialog(
     searchTerm: String = "",

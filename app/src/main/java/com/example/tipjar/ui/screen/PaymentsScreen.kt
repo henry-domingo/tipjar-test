@@ -1,6 +1,5 @@
 package com.example.tipjar.ui.screen
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -58,10 +57,13 @@ import com.example.tipjar.util.TipShapes
 import com.example.tipjar.viewmodel.TipHistoryViewModel
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
-    ExperimentalSharedTransitionApi::class
-)
+/**
+ * Tip History list screen
+ *
+ * @param vm
+ * @param navController
+ */
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun PaymentsScreen(
     vm: TipHistoryViewModel = koinViewModel(),
@@ -301,11 +303,3 @@ private fun SwipeBox(
         }
     }
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun PaymentsScreenPreview() {
-//    TipJarTheme {
-//        PaymentsScreen(rememberNavController())
-//    }
-//}

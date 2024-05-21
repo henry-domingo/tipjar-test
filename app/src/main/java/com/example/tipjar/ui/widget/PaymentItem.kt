@@ -17,6 +17,14 @@ import com.example.tipjar.ui.theme.compactPaddingDimensions
 import com.example.tipjar.ui.theme.compactTipTypography
 import com.example.tipjar.util.toDateString
 
+/**
+ * Composable for payment item
+ *
+ * @param modifier
+ * @param currency current currency
+ * @param isDisplayedInRow flag to determine the weight of the tip text
+ * @param item [TipHistory] instance
+ */
 @Composable
 fun PaymentItem(
     modifier: Modifier = Modifier,

@@ -12,6 +12,14 @@ import com.example.tipjar.R
 import com.example.tipjar.ui.theme.Orange
 import com.example.tipjar.ui.theme.TipJarTheme
 
+/**
+ * Composable
+ *
+ * @param body String resource id to be displayed in the dialog
+ * @param dismissText String resource id to be displayed in the negative button
+ * @param onDismissRequest Callback to be invoked when the user dismisses the dialog
+ * @receiver
+ */
 @Composable
 fun SimpleDialog(
     @StringRes body: Int,

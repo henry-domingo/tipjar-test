@@ -1,7 +1,7 @@
 package com.example.tipjar.viewmodel
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.tipjar.base.BaseViewModel
 import com.example.tipjar.domain.model.TipHistory
 import com.example.tipjar.domain.repository.DataStoreRepository
 import com.example.tipjar.domain.usecase.tip.RemoveTipUseCase
@@ -15,11 +15,19 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.io.File
 
+/**
+ * Viewmodel for Tip history view
+ *
+ * @property removeTipUseCase
+ * @property searchTipUseCase
+ * @property datastoreRepository
+ * @constructor Create empty Tip history view model
+ */
 class TipHistoryViewModel(
     private val removeTipUseCase: RemoveTipUseCase,
     private val searchTipUseCase: SearchTipUseCase,
     private val datastoreRepository: DataStoreRepository,
-) : BaseViewModel() {
+) : ViewModel() {
     var filesDirectory: File? = null
 
     //payments state
@@ -39,6 +47,13 @@ class TipHistoryViewModel(
         MutableStateFlow<Triple<Boolean, Long?, Long?>>(Triple(false, null, null))
     val showDatePicker = _showDatePicker.asStateFlow()
 
+    /**
+     * Toggles the date dialog for searching payments
+     *
+     * @param show
+     * @param startDate
+     * @param endDate
+     */
     fun toggleDateDialog(show: Boolean, startDate: Long? = null, endDate: Long? = null) {
         if (startDate != null && endDate != null) {
             _showDatePicker.value = Triple(show, startDate, endDate)
@@ -47,10 +62,22 @@ class TipHistoryViewModel(
         }
     }
 
+    /**
+     * Toggles the item dialog
+     *
+     * @param show
+     * @param item
+     */
     fun toggleItemDialog(show: Boolean, item: TipHistory? = null) {
         _showDialog.value = Pair(show, item)
     }
 
+    /**
+     * Called when the user want an item to be deleted.
+     * This will remove the item from the database and the image from the file system.
+     *
+     * @param tipToBeRemoved tip to be removed
+     */
     fun onDeletePayment(tipToBeRemoved: TipHistory) {
         viewModelScope.launch(Dispatchers.IO) {
             removeTipUseCase.invoke(tipToBeRemoved)
@@ -58,6 +85,13 @@ class TipHistoryViewModel(
         }
     }
 
+    /**
+     * Called usually on the first load of the viewmodel.
+     * This can also be used to search for payments in a specific date range.
+     *
+     * @param startDate
+     * @param endDate
+     */
     fun onShowAllPayments(startDate: Long? = null, endDate: Long? = null) {
         if (startDate != null && endDate != null) {
             viewModelScope.launch(Dispatchers.IO) {
@@ -74,6 +108,10 @@ class TipHistoryViewModel(
         }
     }
 
+    /**
+     * Gets the currency from the datastore
+     *
+     */
     fun onGetCurrency() {
         viewModelScope.launch(Dispatchers.IO) {
             datastoreRepository.getString(SP_CURRENCY_KEY, DEFAULT_CURRENCY).collectLatest { data ->
